@@ -34,3 +34,4 @@ module.exports = mongoose.model('MediaItem', MediaItemSchema);
     // // For Foreign Keys:
     // public MediaType MediaType { get; set; }
     // public AppUser AppUser { get; set; }
+    

@@ -25,10 +25,10 @@ var MediaItem = require('../models/MediaItem.js');
 // );
 // END TEST POST
 
-/* GET /mediaitem listing. */
+/* GET /api/mediaitem listing. */
 router.get('/', function(req, res, next) {
   MediaItem.find(function (err, mediaitems) {
-  	console.log("Reached /mediaitem");
+  	console.log("Reached /api/mediaitem");
     if (err) return next(err);
     res.json(mediaitems);
   });
