@@ -7,7 +7,7 @@ var AppUser = require('../models/AppUser.js');
 // GET: /api/appuser
 // GET: api/appuser?username=githubAlias
 router.get('/', function(req, res, next) {
-  	console.log("Accessed /api/appuser");
+  console.log("Accessed /api/appuser");
   if (req.query.username === undefined) {
   	console.log("No username provided. Returning all users.");
 	  AppUser.find(function (err, appusers) {
@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
 	    res.json(formattedAppUsers);
 	  });
   } else {
-  	console.log("Username provided: ", req.query.username);
+  	console.log("Username submitted: ", req.query.username);
   	AppUser.findOne({Username: req.query.username}, 
   		function(err, requestedUser) { 
   			if (requestedUser !== null) {
