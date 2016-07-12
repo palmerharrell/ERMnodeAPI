@@ -4,12 +4,25 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var MediaType = require('../models/MediaType.js');
 
-/* GET /api/mediatype listing. */
+// GET /api/mediatype 
 router.get('/', function(req, res, next) {
   MediaType.find(function (err, mediatypes) {
-  	console.log("Reached /api/mediatype");
+  	console.log("Accessed /api/mediatype");
+  	var formattedMediaTypes = [];
+  	
+  	mediatypes.forEach((type) => {
+  		var newType = {
+  			IdMediaType: type.IdMediaType,
+  			Name: type.Name,
+  			ColorName: type.ColorName,
+  			ColorLight: type.ColorLight,
+  			ColorDark: type.ColorDark
+  		};
+  		formattedMediaTypes.push(newType);
+  	});
+
     if (err) return next(err);
-    res.json(mediatypes);
+    res.json(formattedMediaTypes);
   });
 });
 

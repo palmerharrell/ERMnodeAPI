@@ -18,12 +18,25 @@ var AppUser = require('../models/AppUser.js');
 // );
 // // END TEST POST
 
-/* GET /api/appuser listing. */
+
+// GET /api/appuser
 router.get('/', function(req, res, next) {
   AppUser.find(function (err, appusers) {
   	console.log("Reached /api/appuser");
+  	var formattedAppUsers = [];
+
+  	appusers.forEach((user) => {
+  		var newUser = {
+  			IdAppUser: user.IdAppUser,
+  			Username: user.Username,
+  			Email: user.Email,
+  			MediaItems: null
+  		};
+  		formattedAppUsers.push(newUser);
+  	});
+
     if (err) return next(err);
-    res.json(appusers);
+    res.json(formattedAppUsers);
   });
 });
 
