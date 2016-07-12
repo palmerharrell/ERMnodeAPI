@@ -4,40 +4,56 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var AppUser = require('../models/AppUser.js');
 
-// // TEST POST
-// AppUser.create(
-// 	{
-// 		IdAppUser: 14, 
-// 		Username: 'palmerharrell', 
-// 		Email: null
-// 	}, 
-// 	function(err, appuser){
-//   	if(err) console.log(err);
-//   	else console.log(appuser);
-// 	}
-// );
-// // END TEST POST
-
-
-// GET /api/appuser
+// GET: /api/appuser
+// GET: api/appuser?username=githubAlias
 router.get('/', function(req, res, next) {
-  AppUser.find(function (err, appusers) {
-  	console.log("Reached /api/appuser");
-  	var formattedAppUsers = [];
-
-  	appusers.forEach((user) => {
-  		var newUser = {
-  			IdAppUser: user.IdAppUser,
-  			Username: user.Username,
-  			Email: user.Email,
-  			MediaItems: null
-  		};
-  		formattedAppUsers.push(newUser);
+  	console.log("Accessed /api/appuser");
+  if (req.query.username === undefined) {
+  	console.log("No username provided. Returning all users.");
+	  AppUser.find(function (err, appusers) {
+	  	var formattedAppUsers = [];
+	  	appusers.forEach((user) => {
+	  		var singleUser = {
+	  			IdAppUser: user.IdAppUser,
+	  			Username: user.Username,
+	  			Email: user.Email,
+	  			MediaItems: null
+	  		};
+	  		formattedAppUsers.push(singleUser);
+	  	});
+	    if (err) return next(err);
+	    res.json(formattedAppUsers);
+	  });
+  } else {
+  	console.log("Username provided: ", req.query.username);
+  	AppUser.findOne({Username: req.query.username}, 
+  		function(err, requestedUser) { 
+  			if (requestedUser !== null) {
+	  			var formattedUser = {
+	  				IdAppUser: requestedUser.IdAppUser,
+	  				Username: requestedUser.Username,
+	  				Email: requestedUser.Email,
+	  				MediaItems: null
+	  			};
+	  			if (err) return next(err);
+	  			res.json(formattedUser);
+	  		} else {
+	  			if (err) return next(err);
+	  			res.json({Error: 'Requested user not found'});
+	  		}
   	});
-
-    if (err) return next(err);
-    res.json(formattedAppUsers);
-  });
+  }
 });
+
+
+
+
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// TODO:
+// POST: api/appuser
+
+// Maybe, check frontend:
+// GET: api/appuser/5 (specific appuser by id) 
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 module.exports = router;

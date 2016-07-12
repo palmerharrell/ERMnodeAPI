@@ -1,7 +1,8 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-
 var mongoose = require('mongoose');
+var autoIncrement = require('mongoose-auto-increment');
+
 mongoose.connect('mongodb://localhost/ERMapi', function(err) {
     if(err) {
         console.log('connection error', err);
@@ -9,6 +10,8 @@ mongoose.connect('mongodb://localhost/ERMapi', function(err) {
         console.log('connection successful');
     }
 });
+
+autoIncrement.initialize(mongoose);
 
 var mediaItems = require('./routes/mediaItemRoute');
 var mediaTypes = require('./routes/mediaTypeRoute');

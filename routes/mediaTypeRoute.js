@@ -4,7 +4,7 @@ var router = express.Router();
 var mongoose = require('mongoose');
 var MediaType = require('../models/MediaType.js');
 
-// GET /api/mediatype 
+// GET: /api/mediatype 
 router.get('/', function(req, res, next) {
   MediaType.find(function (err, mediatypes) {
   	console.log("Accessed /api/mediatype");
