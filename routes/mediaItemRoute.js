@@ -3,22 +3,25 @@ var router = express.Router();
 
 var mongoose = require('mongoose');
 var MediaItem = require('../models/MediaItem.js');
+var MediaType = require('../models/MediaType.js');
 
-// TEST (gets all mediaitems)
-// GET: /api/mediaitem
-// router.get('/', function(req, res, next) {
-//   MediaItem.find(function (err, mediaitems) {
-//   	console.log("Reached /api/mediaitem");
-//     if (err) return next(err);
-//     res.json(mediaitems);
-//   });
-// });
+var typeNames = [];
+
+function getTypesQuery(){
+	var query = MediaType.find({});
+	return query;
+}
+
+var query = getTypesQuery();
+query.exec(function(err, types) {
+	if (err) return console.log(err);
+	typeNames = types;
+})
 
 // GET: api/mediaitem?userid=2
 router.get('/', function(req, res, next) {
   console.log("Accessed /api/mediaitem");
   if (req.query.userid === undefined) {
-  	if (err) return next(err);
   	res.json({Error: 'No userId provided'});
   } else {
   	console.log("userid submitted: ", req.query.userid);
@@ -26,7 +29,12 @@ router.get('/', function(req, res, next) {
   		function(err, mediaItems) {
   			var formattedMediaItems = [];
   			mediaItems.forEach((item) => {
+  				var typeIndex = typeNames.map(function(type) { 
+  					return type.IdMediaType; 
+  				}).indexOf(item.IdMediaType);
+  				var typeName = typeNames[typeIndex].Name;
   				var singleItem = {
+  					IdMediaItem: item.IdMediaItem,
   					IdMediaType: item.IdMediaType,
   					IdAppUser: item.IdAppUser,
   					Name: item.Name,
@@ -34,6 +42,7 @@ router.get('/', function(req, res, next) {
   					Notes: item.Notes,
   					Finished: item.Finished,
   					Favorite: item.Favorite,
+  					Type: typeName,
   					Rating: item.Rating
   				};
   				formattedMediaItems.push(singleItem);
@@ -50,6 +59,39 @@ router.get('/', function(req, res, next) {
   }
 });
 
+// POST: api/mediaitem
+router.post('/', function(req, res, next) {
+	console.log("Accessed POST: /api/mediaitem");
+	MediaItem.create(
+	{
+		IdMediaType: req.body.IdMediaType,
+		IdAppUser: req.body.IdAppUser,
+		Name: req.body.Name,
+		Recommender: req.body.Recommender,
+		Notes: req.body.Notes,
+		Finished: req.body.Finished,
+		Favorite: req.body.Favorite,
+		Rating: req.body.Rating
+	},
+	function(err, mediaitem){
+		if (err) return next(err);
+		var formattedItem = {
+			IdMediaItem: mediaitem.IdMediaItem,
+			IdMediaType: mediaitem.IdMediaType,
+			IdAppUser: mediaitem.IdAppUser,
+			Name: mediaitem.Name,
+			Recommender: mediaitem.Recommender,
+			Notes: mediaitem.Notes,
+			Finished: mediaitem.Finished,
+			Favorite: mediaitem.Favorite,
+			Rating: mediaitem.Rating,
+			DateAdded: mediaitem.DateAdded,
+			MediaType: null,
+			AppUser: null
+		};
+		res.status(201).json(formattedItem);
+	})
+});
 
 // POSTING EXAMPLE WITH *AUTO-INCREMENT*
 // MediaItem.create(
@@ -74,7 +116,7 @@ router.get('/', function(req, res, next) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // TODO:
 
-// POST: api/mediaitem
+
 // DELETE: api/mediaitem?userid=1&itemid=6
 // PUT: api/mediaitem?userid=12
 
