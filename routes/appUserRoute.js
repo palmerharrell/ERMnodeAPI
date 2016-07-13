@@ -7,7 +7,7 @@ var AppUser = require('../models/AppUser.js');
 // GET: /api/appuser
 // GET: api/appuser?username=githubAlias
 router.get('/', function(req, res, next) {
-  console.log("Accessed /api/appuser");
+  console.log("Accessed GET: /api/appuser");
   if (req.query.username === undefined) {
   	console.log("No username provided. Returning all users.");
 	  AppUser.find(function (err, appusers) {
@@ -28,32 +28,49 @@ router.get('/', function(req, res, next) {
   	console.log("Username submitted: ", req.query.username);
   	AppUser.findOne({Username: req.query.username}, 
   		function(err, requestedUser) { 
+	  		if (err) return next(err);
   			if (requestedUser !== null) {
-	  			var formattedUser = {
+	  			var formattedUser = [{
 	  				IdAppUser: requestedUser.IdAppUser,
 	  				Username: requestedUser.Username,
 	  				Email: requestedUser.Email,
 	  				MediaItems: null
-	  			};
-	  			if (err) return next(err);
+	  			}];
 	  			res.json(formattedUser);
 	  		} else {
-	  			if (err) return next(err);
 	  			res.json({Error: 'Requested user not found'});
 	  		}
   	});
   }
 });
 
-
-
-
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TODO:
 // POST: api/appuser
-
-// Maybe, check frontend:
-// GET: api/appuser/5 (specific appuser by id) 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+// Expected req.body: {"Username" : "githubAlias", "Email" : null}
+router.post('/', function(req, res, next) {
+	console.log("Accessed POST: /api/appuser");
+	AppUser.findOne({Username: req.body.Username}, 
+  		function(err, requestedUser) { 
+  			if (err) return next(err);
+  			if (requestedUser === null) {
+  				var newUser = {
+  					Username: req.body.Username,
+  					Email: req.body.Email,
+  					MediaItems: null
+  				};
+  				AppUser.create(newUser, function(err, user) {
+  					if (err) return next(err);
+  					var formattedUser = {
+  						IdAppUser: user.IdAppUser,
+  						Username: user.Username,
+  						Email: user.Email,
+  						MediaItems: null
+  					};
+	  				res.status(201).json(formattedUser);
+  				});
+	  		} else {
+	  			res.status(409).send(); // Conflict (User already exists)
+	  		}
+  	});
+});
 
 module.exports = router;

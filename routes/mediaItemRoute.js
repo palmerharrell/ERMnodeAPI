@@ -78,8 +78,6 @@ router.get('/', function(req, res, next) {
 // DELETE: api/mediaitem?userid=1&itemid=6
 // PUT: api/mediaitem?userid=12
 
-// Maybe, check frontend:
-// GET: api/mediaitem/5 (specific mediaItem by id)
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
