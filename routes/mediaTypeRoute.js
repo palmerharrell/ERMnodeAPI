@@ -6,8 +6,8 @@ var MediaType = require('../models/MediaType.js');
 
 // GET: /api/mediatype 
 router.get('/', function(req, res, next) {
+  console.log("Accessed GET: /api/mediatype");
   MediaType.find(function (err, mediatypes) {
-  	console.log("Accessed /api/mediatype");
   	var formattedMediaTypes = [];
   	
   	mediatypes.forEach((type) => {

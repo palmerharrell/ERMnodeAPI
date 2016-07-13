@@ -93,33 +93,28 @@ router.post('/', function(req, res, next) {
 	})
 });
 
-// POSTING EXAMPLE WITH *AUTO-INCREMENT*
-// MediaItem.create(
-// 	{
-// 		IdMediaType: 3, 
-// 		IdAppUser: 14,
-// 		Name: 'TEST 2 after counter reset',
-// 		Recommender: 'Laura',
-// 		Notes: 'Testing... 2003! woohoo',
-// 		Finished: true,
-// 		Favorite: false,
-// 		Rating: 0
-// 	}, 
-// 	function(err, mediaitem){
-//   	if(err) console.log(err);
-//   	else console.log(mediaitem);
-// 	}
-// );
-// END SAMPLE DATA POST
-
+// DELETE: api/mediaitem?userid=1&itemid=6
+router.delete('/', function(req, res, next) {
+	console.log("Accessed DELETE: /api/mediaitem");
+	MediaItem.findOne({IdMediaItem: req.query.itemid},
+		function(err, mediaitem) {
+			if (err) return next(err);
+			if (mediaitem.IdAppUser == req.query.userid) {
+				MediaItem.remove({IdMediaItem: req.query.itemid},
+					function(err, itemToRemove) {
+						if (err) return next(err);
+						res.json(mediaitem);
+					});
+			} else {
+				res.status(404).send();
+			};
+		});
+});
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // TODO:
 
-
-// DELETE: api/mediaitem?userid=1&itemid=6
 // PUT: api/mediaitem?userid=12
-
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 
