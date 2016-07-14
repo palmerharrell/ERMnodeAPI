@@ -20,7 +20,7 @@ query.exec(function(err, types) {
 
 // GET: api/mediaitem?userid=2
 router.get('/', function(req, res, next) {
-  console.log("Accessed /api/mediaitem");
+  console.log("Accessed GET: /api/mediaitem");
   if (req.query.userid === undefined) {
   	res.json({Error: 'No userId provided'});
   } else {
@@ -36,14 +36,15 @@ router.get('/', function(req, res, next) {
   				var singleItem = {
   					IdMediaItem: item.IdMediaItem,
   					IdMediaType: item.IdMediaType,
-  					IdAppUser: item.IdAppUser,
+  					// IdAppUser: item.IdAppUser,
   					Name: item.Name,
   					Recommender: item.Recommender,
   					Notes: item.Notes,
   					Finished: item.Finished,
   					Favorite: item.Favorite,
   					Type: typeName,
-  					Rating: item.Rating
+  					Rating: item.Rating,
+  					DateAdded: item.DateAdded
   				};
   				formattedMediaItems.push(singleItem);
   			});
@@ -111,13 +112,23 @@ router.delete('/', function(req, res, next) {
 		});
 });
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// TODO:
-
 // PUT: api/mediaitem?userid=12
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-
+router.put('/', function(req, res, next) {
+	console.log("Accessed PUT: /api/mediaitem");
+	console.log("** req.body.IdMediaItem: ", req.body.IdMediaItem); // TEST
+	MediaItem.findOne({IdMediaItem: req.body.IdMediaItem},
+		function(err, mediaitem) {
+			if (err) return next(err);
+			if (mediaitem.IdAppUser == req.query.userid) {
+				MediaItem.findByIdAndUpdate(mediaitem._id, req.body,
+					function(err, item) {
+						if (err) return next(err);
+						res.json({successMessage: "Record successfully updated."});
+					});
+			} else {
+				res.json({errorMessage: "This user does not have permission to alter this record."});
+			}
+		});
+});
 
 module.exports = router;
